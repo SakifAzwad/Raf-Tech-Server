@@ -39,14 +39,51 @@ async function run() {
     });
 
     app.get("/products", async (req, res) => {
+      
       const cursor = raftechCol2.find();
       const rest = await cursor.toArray();
       res.send(rest);
     });
+    app.get("/products2", async (req, res) => {
+      
+      const cursor = raftechCol2.find();
+      const rest = await cursor.toArray();
+      res.send(rest);
+    });
+    
+    app.get('/products2/:id',async(req,res)=>
+     {
+      const id=req.params.id;
+      const query={_id: new ObjectId(id)};
+      const result=await raftechCol2.findOne(query);
+        res.send(result);
+     })
+
+     app.put('/products2/:id',async(req,res)=>
+     {
+      const id=req.params.id;
+      const filter={_id: new ObjectId(id)};
+      const options = {upsert : true};
+      const update=req.body;
+      const pro = 
+      {
+        $set:
+        {
+          image:update.image, 
+          name:update.name, 
+          brand_name:update.brand_name, 
+          type:update.type, 
+          price:update.price, 
+          rating:update.rating, 
+          details:update.details
+        }
+      }
+      const result=await raftechCol2.updateOne(filter,pro,options);
+        res.send(result);
+     })
     app.post('/products',async(req,res)=>
     {
       const ne=req.body;
-      
       const result=await raftechCol2.insertOne(ne);
       res.send(result);
     })
