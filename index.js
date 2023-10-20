@@ -43,6 +43,13 @@ async function run() {
       const rest = await cursor.toArray();
       res.send(rest);
     });
+    app.post('/products',async(req,res)=>
+    {
+      const ne=req.body;
+      
+      const result=await raftechCol2.insertOne(ne);
+      res.send(result);
+    })
 
     app.get("/products/:brname", async (req, res) => {
         const brname = req.params.brname;
