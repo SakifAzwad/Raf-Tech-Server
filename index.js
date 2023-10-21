@@ -26,11 +26,13 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const raftechCol = client.db("raftech").collection("brand_name");
 
     const raftechCol2 = client.db("raftech").collection("product_name");
+
+    const raftechCol3 = client.db("raftech").collection("user_cart");
 
     app.get("/brandname", async (req, res) => {
       const cursor = raftechCol.find();
@@ -50,6 +52,25 @@ async function run() {
       const rest = await cursor.toArray();
       res.send(rest);
     });
+    app.get("/usercart", async (req, res) => {
+      
+      const cursor = raftechCol3.find();
+      const rest = await cursor.toArray();
+      res.send(rest);
+    });
+    app.get('/usercart/:id',async(req,res)=>
+     {
+      const id=req.params.id;
+      const query={_id: new ObjectId(id)};
+      const result=await raftechCol3.findOne(query);
+        res.send(result);
+     })
+    app.post('/usercart',async(req,res)=>
+    {
+      const ne=req.body;
+      const result=await raftechCol3.insertOne(ne);
+      res.send(result);
+    })
     
     app.get('/products2/:id',async(req,res)=>
      {
@@ -96,6 +117,14 @@ async function run() {
         res.send(result);
       });
 
+      app.delete('/usercart/:id',async(req,res)=>
+    {
+      const id=req.params.id;
+      const query={_id: new ObjectId(id)};
+      const rest=await raftechCol3.deleteOne(query);
+      res.send(rest);
+    })
+
 
     app.get("/brandname/:id", async (req, res) => {
       const id = req.params.id;
@@ -105,10 +134,10 @@ async function run() {
     });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+    // await client.db("admin").command({ ping: 1 });
+    // console.log(
+    //   "Pinged your deployment. You successfully connected to MongoDB!"
+    // );
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
